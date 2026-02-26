@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Zap, Settings, ChevronLeft, LayoutGrid } from 'lucide-react';
+import { Zap, Settings, ChevronLeft, LayoutGrid, Users } from 'lucide-react';
 import { useMissionControl } from '@/lib/store';
 import { format } from 'date-fns';
 import type { Workspace } from '@/lib/types';
@@ -14,7 +14,7 @@ interface HeaderProps {
 
 export function Header({ workspace }: HeaderProps) {
   const router = useRouter();
-  const { agents, tasks, isOnline } = useMissionControl();
+  const { agents, tasks, isOnline, viewMode, setViewMode } = useMissionControl();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [activeSubAgents, setActiveSubAgents] = useState(0);
 
@@ -86,16 +86,45 @@ export function Header({ workspace }: HeaderProps) {
         )}
       </div>
 
-      {/* Center: Stats - only show in workspace view */}
+      {/* Center: View toggle + Stats */}
       {workspace && (
-        <div className="flex items-center gap-8">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-mc-accent-cyan">{activeAgents}</div>
-            <div className="text-xs text-mc-text-secondary uppercase">Agents Active</div>
+        <div className="flex items-center gap-6">
+          {/* View toggle */}
+          <div className="flex items-center rounded-lg border border-mc-border overflow-hidden">
+            <button
+              onClick={() => setViewMode('fleet')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium transition-colors ${
+                viewMode === 'fleet'
+                  ? 'bg-mc-accent text-mc-bg'
+                  : 'text-mc-text-secondary hover:text-mc-text'
+              }`}
+            >
+              <Users className="w-3.5 h-3.5" />
+              Fleet
+            </button>
+            <button
+              onClick={() => setViewMode('kanban')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium transition-colors ${
+                viewMode === 'kanban'
+                  ? 'bg-mc-accent text-mc-bg'
+                  : 'text-mc-text-secondary hover:text-mc-text'
+              }`}
+            >
+              <LayoutGrid className="w-3.5 h-3.5" />
+              Board
+            </button>
           </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-mc-accent-purple">{tasksInQueue}</div>
-            <div className="text-xs text-mc-text-secondary uppercase">Tasks in Queue</div>
+
+          {/* Stats */}
+          <div className="flex items-center gap-8">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-mc-accent-cyan">{activeAgents}</div>
+              <div className="text-xs text-mc-text-secondary uppercase">Agents Active</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-mc-accent-purple">{tasksInQueue}</div>
+              <div className="text-xs text-mc-text-secondary uppercase">Tasks in Queue</div>
+            </div>
           </div>
         </div>
       )}

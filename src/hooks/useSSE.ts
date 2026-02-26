@@ -8,7 +8,7 @@
 import { useEffect, useRef } from 'react';
 import { useMissionControl } from '@/lib/store';
 import { debug } from '@/lib/debug';
-import type { SSEEvent, Task } from '@/lib/types';
+import type { SSEEvent, Task, Agent } from '@/lib/types';
 
 export function useSSE() {
   const eventSourceRef = useRef<EventSource | null>(null);
@@ -18,6 +18,7 @@ export function useSSE() {
   const {
     updateTask,
     addTask,
+    updateAgent,
     setIsOnline,
     selectedTask,
     setSelectedTask,
@@ -104,6 +105,11 @@ export function useSSE() {
               debug.sse('Agent completed', sseEvent.payload);
               break;
 
+            case 'agent_updated':
+              debug.sse('Agent updated', sseEvent.payload);
+              updateAgent(sseEvent.payload as Agent);
+              break;
+
             default:
               debug.sse('Unknown event type', sseEvent);
           }
@@ -145,5 +151,5 @@ export function useSSE() {
     };
   // selectedTask removed from deps to prevent re-connection loop
   // We use selectedTaskIdRef to check the current selected task ID without triggering re-renders
-  }, [addTask, updateTask, setIsOnline, setSelectedTask]);
+  }, [addTask, updateTask, updateAgent, setIsOnline, setSelectedTask]);
 }
