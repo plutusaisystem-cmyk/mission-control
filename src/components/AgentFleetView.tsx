@@ -94,7 +94,7 @@ export function AgentFleetView({ workspaceId }: AgentFleetViewProps) {
     // Optimistic update
     const optimistic: Task = {
       ...original,
-      assigned_agent_id: newAgentId ?? undefined,
+      assigned_agent_id: newAgentId ?? null,
       status: newStatus as Task['status'],
     };
     updateTask(optimistic);
